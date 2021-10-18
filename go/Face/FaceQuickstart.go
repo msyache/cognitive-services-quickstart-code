@@ -82,7 +82,7 @@ func main() {
 	singleImageURL := face.ImageURL { URL: &singleFaceImageURL } 
 	singleImageName := path.Base(singleFaceImageURL)
 	// Array types chosen for the attributes of Face
-	attributes := []face.AttributeType {"age", "emotion", "gender"}
+	attributes := []face.AttributeType {"blur", "qualityForRecognition"}
 	returnFaceID := true
 	returnRecognitionModel := false
 	returnFaceLandmarks := false
@@ -102,29 +102,12 @@ func main() {
 	fmt.Println("Detected face in (" + singleImageName + ") with ID(s): ")
 	fmt.Println(dFaces[0].FaceID)
 	fmt.Println()
-	// Find/display the age and gender attributes
+	// Find/display the blur and qualityForRecognition attributes
 	for _, dFace := range dFaces { 
 		fmt.Println("Face attributes:")
-		fmt.Printf("  Age: %.0f", *dFace.FaceAttributes.Age) 
-		fmt.Println("\n  Gender: " + dFace.FaceAttributes.Gender) 
+		fmt.Printf("  Blur: " + dFace.FaceAttributes.Blur) 
+		fmt.Println("\n  QualityForRecognition: " + dFace.FaceAttributes.QualityForRecognition) 
 	} 
-	// Get/display the emotion attribute
-	emotionStruct := *dFaces[0].FaceAttributes.Emotion
-	// Convert struct to a map
-	var emotionMap map[string]float64
-	result, _ := json.Marshal(emotionStruct)
-	json.Unmarshal(result, &emotionMap)
-	// Find the emotion with the highest score (confidence level). Range is 0.0 - 1.0.
-	var highest float64 
-	emotion := ""
-	dScore := -1.0
-	for name, value := range emotionMap{
-		if (value > highest) {
-			emotion, dScore = name, value
-			highest = value
-		}
-	}
-	fmt.Println("  Emotion: " + emotion + " (score: " + strconv.FormatFloat(dScore, 'f', 3, 64) + ")")
 	// </snippet_detect_display>
 
 	// <snippet_similar_single_ref>

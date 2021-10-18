@@ -42,7 +42,7 @@ async function DetectFaceExtract() {
 	await Promise.all (image_file_names.map (async function (image_file_name) {
         let detected_faces = await client.face.detectWithUrl(image_base_url + image_file_name,
 			{
-				returnFaceAttributes: ["Accessories","Age","Blur","Emotion","Exposure","FacialHair","Gender","Glasses","Hair","HeadPose","Makeup","Noise","Occlusion","Smile"],
+				returnFaceAttributes: ["Accessories","Blur","Exposure","Glasses","HeadPose","Noise","Occlusion","Smile", "QualityForRecognition"],
 				// We specify detection model 1 because we are retrieving attributes.
 				detectionModel: "detection_01"
 			});
@@ -64,54 +64,11 @@ async function DetectFaceExtract() {
 			}
 
 			// Get face other attributes
-			console.log("Age: " + face.faceAttributes.age);
 			console.log("Blur: " + face.faceAttributes.blur.blurLevel);
-
-			// Get emotion on the face
-			let emotions = "";
-			let emotion_threshold = 0.0;
-			if (face.faceAttributes.emotion.anger > emotion_threshold) { emotions += "anger, "; }
-			if (face.faceAttributes.emotion.contempt > emotion_threshold) { emotions += "contempt, "; }
-			if (face.faceAttributes.emotion.disgust > emotion_threshold) { emotions +=  "disgust, "; }
-			if (face.faceAttributes.emotion.fear > emotion_threshold) { emotions +=  "fear, "; }
-			if (face.faceAttributes.emotion.happiness > emotion_threshold) { emotions +=  "happiness, "; }
-			if (face.faceAttributes.emotion.neutral > emotion_threshold) { emotions +=  "neutral, "; }
-			if (face.faceAttributes.emotion.sadness > emotion_threshold) { emotions +=  "sadness, "; }
-			if (face.faceAttributes.emotion.surprise > emotion_threshold) { emotions +=  "surprise, "; }
-			if (emotions.length > 0) {
-				console.log ("Emotions: " + emotions.slice (0, -2));
-			}
-			else {
-				console.log ("No emotions detected.");
-			}
 			
 			// Get more face attributes
 			console.log("Exposure: " + face.faceAttributes.exposure.exposureLevel);
-			if (face.faceAttributes.facialHair.moustache + face.faceAttributes.facialHair.beard + face.faceAttributes.facialHair.sideburns > 0) {
-				console.log("FacialHair: Yes");
-			}
-			else {
-				console.log("FacialHair: No");
-			}
-			console.log("Gender: " + face.faceAttributes.gender);
 			console.log("Glasses: " + face.faceAttributes.glasses);
-
-			// Get hair color
-			var color = "";
-			if (face.faceAttributes.hair.hairColor.length === 0) {
-				if (face.faceAttributes.hair.invisible) { color = "Invisible"; } else { color = "Bald"; }
-			}
-			else {
-				color = "Unknown";
-				var highest_confidence = 0.0;
-				face.faceAttributes.hair.hairColor.forEach (function (hair_color) {
-					if (hair_color.confidence > highest_confidence) {
-						highest_confidence = hair_color.confidence;
-						color = hair_color.color;
-					}
-				});
-			}
-			console.log("Hair: " + color);
 
 			// Get more attributes
 			console.log("Head pose:");
@@ -119,7 +76,6 @@ async function DetectFaceExtract() {
 			console.log("  Roll: " + face.faceAttributes.headPose.roll);
 			console.log("  Yaw: " + face.faceAttributes.headPose.yaw);
  
-			console.log("Makeup: " + ((face.faceAttributes.makeup.eyeMakeup || face.faceAttributes.makeup.lipMakeup) ? "Yes" : "No"));
 			console.log("Noise: " + face.faceAttributes.noise.noiseLevel);
 
 			console.log("Occlusion:");
@@ -128,6 +84,8 @@ async function DetectFaceExtract() {
 			console.log("  Mouth occluded: " + (face.faceAttributes.occlusion.mouthOccluded ? "Yes" : "No"));
 
 			console.log("Smile: " + face.faceAttributes.smile);
+
+			console.log("QualityForRecognition: " + face.faceAttributes.qualityForRecognition)
 			console.log();
 		});
 	}));
