@@ -375,6 +375,25 @@ namespace FaceQuickstart
                 // Add face to the person group person.
                 foreach (var similarImage in personDictionary[groupedFace])
                 {
+                    Console.WriteLine($"Check whether image is of sufficient quality for recognition");
+                    IList<DetectedFace> detectedFaces = await client.Face.DetectWithUrlAsync($"{url}{similarImage}", 
+                        recognitionModel: recognition_model, 
+                        detectionModel: DetectionModel.Detection03,
+                        returnFaceAttributes: new List<FaceAttributeType> { FaceAttributeType.QualityForRecognition });
+                    bool sufficientQuality = true;
+                    foreach (var face in detectedFaces)
+                    {
+                        var faceQualityForRecognition = face.FaceAttributes.QualityForRecognition;
+                        if (faceQualityForRecognition.HasValue && (faceQualityForRecognition.Value != QualityForRecognition.High)){
+                            sufficientQuality = false;
+                            break;
+                        }
+                    }
+
+                    if (!sufficientQuality){
+                        continue;
+                    }
+
                     Console.WriteLine($"Add face to the person group person({groupedFace}) from image `{similarImage}`");
                     PersistedFace face = await client.PersonGroupPerson.AddFaceFromUrlAsync(personGroupId, person.PersonId,
                         $"{url}{similarImage}", similarImage);
